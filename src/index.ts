@@ -1,17 +1,27 @@
 import express, { Router } from 'express';
+import fetch from 'node-fetch';
+import { createClient } from 'redis';
+
 import { CryptoController, CryptoOption } from './controllers';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
+
+let redisClient: any;
+
+(async () => {
+  redisClient = createClient();
+  redisClient.on('error', (error: any) => console.error(`Error : ${error}`));
+  await redisClient.connect();
+})();
+
 const app = express();
 const CryptoRouter = Router();
 
 app.use('/api', CryptoRouter);
 
 CryptoRouter.get('/:symbol', async (req, res) => {
-  // const { symbol = 'bitcoin', minutes } = req.params as unknown as CryptoOption;
-
   const symbol =
     typeof req.params.symbol === 'undefined' ? 'bitcoin' : req.params.symbol;
   const minutes =
@@ -21,6 +31,9 @@ CryptoRouter.get('/:symbol', async (req, res) => {
     symbol,
     minutes,
   } as CryptoOption);
+
+  await redisClient.set(symbol, JSON.stringify(result));
+
   res.send(result);
 });
 

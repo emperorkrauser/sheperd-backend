@@ -1,14 +1,23 @@
 import express, { Router } from 'express';
-import { CryptoController } from './controllers';
+import { CryptoController, CryptoOption } from './controllers';
+import dotenv from 'dotenv';
+import { error } from 'console';
+dotenv.config();
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const app = express();
 const CryptoRouter = Router();
 
 app.use('/api', CryptoRouter);
 
-CryptoRouter.route('/').get(async (req, res) => {
-  const result = await CryptoController.browse();
+app.get('/:symbol', async (req, res) => {
+  const { symbol = 'bitcoin', minutes = 60 } =
+    req.params as unknown as CryptoOption;
+  const cryptoparams = {
+    symbol,
+    minutes,
+  };
+  const result = await CryptoController.browse(cryptoparams);
   res.send(result);
 });
 

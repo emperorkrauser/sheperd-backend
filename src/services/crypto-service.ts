@@ -1,3 +1,4 @@
+import { CryptoOption, Symbols } from '../controllers';
 import { CryptoRepository } from '../repositories';
 
 function getRepository() {
@@ -5,9 +6,9 @@ function getRepository() {
 }
 
 export class CryptoService {
-  public static async browse() {
+  public static async browse(options: CryptoOption) {
     try {
-      const result = await getRepository().browse();
+      const result = await getRepository().browse(options);
       return result;
     } catch (error) {
       console.error(error);

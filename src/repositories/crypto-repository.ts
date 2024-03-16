@@ -14,8 +14,7 @@ export class CryptoRepository {
       await this.getLatest(symbol),
       await this.getHistory(symbol),
     ]);
-    console.log('promise 1', promises[0]);
-    console.log('promise 2', promises[1]);
+
     const latest = promises[0];
     const history = promises[1];
 

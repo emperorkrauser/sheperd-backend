@@ -6,22 +6,32 @@ export class CryptoRepository {
   public async browse(options: CryptoOption) {
     const { symbol, minutes } = options;
     let finalResult = {};
-    const result = await this.getLatest(symbol);
-    console.log('browse result', result.api);
+    const latest = await this.getLatest(symbol);
 
     const history = await this.getHistory(symbol);
-    console.log('historyResult', history);
+    const { current_price } = history;
+    let sumOfPrices = 0;
+    let count = 0;
+    for (const key in current_price) {
+      if (Object.prototype.hasOwnProperty.call(current_price, key)) {
+        sumOfPrices += current_price[key];
+        count++;
+      }
+    }
 
     return {
       ...finalResult,
-      latest: result.api.eur,
+      latest,
+      average: sumOfPrices / count,
       history,
+      count,
     };
   }
 
   // repository to get the latest
   public async getLatest(symbol: string) {
-    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${symbol}&vs_currencies=eur&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true&precision=full`;
+    // const { minutes, symbol } = params;
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${symbol}&vs_currencies=eur`;
     const options = {
       method: 'GET',
       headers: { 'x-cg-demo-api-key': API_KEY },
@@ -32,9 +42,8 @@ export class CryptoRepository {
   }
 
   public async getHistory(symbol: string) {
-    const unformattedDate = Date.now();
-    const date = moment('01-01-2020').format('MM-DD-YYYY');
-    console.log('date', date);
+    const unformattedDate = new Date('01-01-2020');
+    const date = moment(unformattedDate).format('MM-DD-YYYY');
     const url = `https://api.coingecko.com/api/v3/coins/${symbol}/history?date=${date}&localization=false";`;
     const options = {
       method: 'GET',

@@ -6,9 +6,19 @@ export class CryptoRepository {
   public async browse(options: CryptoOption) {
     const { symbol, minutes } = options;
     let finalResult = {};
-    const latest = await this.getLatest(symbol);
 
-    const history = await this.getHistory(symbol);
+    // const latest = await this.getLatest(symbol);
+    // const history = await this.getHistory(symbol);
+
+    const promises = await Promise.all([
+      await this.getLatest(symbol),
+      await this.getHistory(symbol),
+    ]);
+    console.log('promise 1', promises[0]);
+    console.log('promise 2', promises[1]);
+    const latest = promises[0];
+    const history = promises[1];
+
     const { current_price } = history;
     let sumOfPrices = 0;
     let count = 0;
@@ -28,9 +38,7 @@ export class CryptoRepository {
     };
   }
 
-  // repository to get the latest
   public async getLatest(symbol: string) {
-    // const { minutes, symbol } = params;
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${symbol}&vs_currencies=eur`;
     const options = {
       method: 'GET',

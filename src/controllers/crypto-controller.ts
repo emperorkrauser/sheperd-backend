@@ -6,7 +6,7 @@ export interface Symbols {
 
 export interface CryptoOption {
   minutes?: number;
-  symbol: 'bitcoin' | 'ethereum' | 'dogecoin';
+  symbol: Symbols['symbol'];
 }
 
 export class CryptoController {
@@ -15,7 +15,6 @@ export class CryptoController {
     this.CryptoService = CryptoService;
   }
 
-  // fetch all prices in EUR of the cryptocurrencies Bitcoin, Ethereum and Dogecoin
   public static async browse(options: CryptoOption) {
     try {
       const result = await CryptoService.browse(options);

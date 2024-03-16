@@ -7,9 +7,6 @@ export class CryptoRepository {
     const { symbol, minutes } = options;
     let finalResult = {};
 
-    // const latest = await this.getLatest(symbol);
-    // const history = await this.getHistory(symbol);
-
     const promises = await Promise.all([
       await this.getLatest(symbol),
       await this.getHistory(symbol),
